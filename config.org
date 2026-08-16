@@ -223,6 +223,13 @@
     (find-file (expand-file-name "index.org" org-directory)))
 #+end_src
 
+** quit
+
+#+begin_src emacs-lisp
+  (my/leader
+    "wq" #'save-buffers-kill-terminal)
+#+end_src
+
 ** 显示
 
 #+begin_src emacs-lisp

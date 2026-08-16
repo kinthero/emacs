@@ -46,12 +46,6 @@
 
 * 基础配置
 
-** 启动文件
-
-#+begin_src emacs-lisp
-  (setq initial-buffer-choice "~/org/index.org")
-#+end_src
-
 ** custom
 
 #+begin_src emacs-lisp
@@ -212,6 +206,21 @@
     (org-babel-tangle-file my/emacs-config-org)
     (load-file my/emacs-config-el)
     (message "Emacs config reloaded!"))
+#+end_src
+
+** project
+
+#+begin_src emacs-lisp
+  (my/leader
+    "pp" #'project-switch-project
+    "pf" #'project-find-file
+    "pd" #'project-dired
+    "po" #'my/open-note-index)
+
+  (defun my/open-note-index ()
+    "Open the Org notes index."
+    (interactive)
+    (find-file (expand-file-name "index.org" org-directory)))
 #+end_src
 
 ** 显示

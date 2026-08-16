@@ -1,0 +1,461 @@
+#+title: Emacs setup
+#+AUTHOR: kinther
+#+DESCRIPTION: kinther's personal emacs setup
+#+STARTUP: overview
+#+PROPERTY: header-args :results silent
+#+OPTIONS: toc:2
+
+* 初始化前的准备
+
+** early-init
+
+在 =early-init.el= 中配置
+
+#+begin_src emacs-lisp :tangle no
+  (setq default-frame-alist
+        '(
+    	(left . 0.5)
+    	(top . 0.5)
+    	(width . 0.7)
+    	(height . 0.7)
+    	(internal-border-width . 8)
+    	(menu-bar-lines . 0)
+    	(tool-bar-lines . 0)
+    	(vertical-scroll-bars . nil)
+    	(horizontal-scroll-bars . nil)
+    	(left-fringe . 0)
+    	(right-fringe . 0)
+    	(font . "FiraCode Nerd Font Mono-14")
+    	;; (alpha . (80 . 100))
+    	))
+
+  (setq inhibit-startup-screen t
+        initial-scratch-message nil)
+#+end_src
+
+** init
+
+在 =~/.emacs.d/init.el= 中配置
+
+#+begin_src emacs-lisp :tangle no
+  ;; -*- lexical-binding: t; -*-
+
+  (org-babel-load-file (expand-file-name "config.org"
+  				       user-emacs-directory))
+#+end_src
+
+* 基础配置
+
+** 启动文件
+
+#+begin_src emacs-lisp
+  (setq initial-buffer-choice "~/org/index.org")
+#+end_src
+
+** custom
+
+#+begin_src emacs-lisp
+  (setq custom-file (expand-file-name "custom.el" user-emacs-directory))
+  (when (file-exists-p custom-file)
+    (load custom-file))
+#+end_src
+
+** 包初始化
+
+#+begin_src emacs-lisp
+  (add-to-list 'package-archives '("melpa" . "https://melpa.org/packages/") t)
+#+end_src
+
+** 编码
+
+#+begin_src emacs-lisp
+  (set-language-environment "UTF-8")
+  (set-default-coding-systems 'utf-8)
+#+end_src
+
+** 字体
+
+#+begin_src emacs-lisp
+  (set-fontset-font t 'han (font-spec :family "LXGW WenKai Mono GB"))
+#+end_src
+
+** UI
+
+#+begin_src emacs-lisp
+  (setq frame-title-format nil)
+#+end_src
+
+*** modeline
+
+**** face attribute
+
+#+begin_src emacs-lisp
+  (set-face-attribute 'mode-line nil
+    		    :inherit 'default
+                      :overline "#7f67bd")
+  (set-face-attribute 'mode-line-active nil
+    		    :inherit 'default
+                      :overline "orange")
+  (set-face-attribute 'mode-line-inactive nil
+    		    :inherit 'default
+                      :overline "#eef4f9")  
+#+end_src
+
+**** display time
+
+#+begin_src emacs-lisp
+  (setq display-time-24hr-format t)
+  (setq display-time-load-average-threshold nil)
+  (display-time-mode 1)
+  (setq-default mode-line-format
+    	      '(" "
+    		mode-line-buffer-identification
+    		"   "
+    		mode-line-position
+    		mode-line-modes
+    		mode-line-format-right-align
+    		display-time-string))
+#+end_src
+
+** 编辑增强
+
+#+begin_src emacs-lisp
+  (delete-selection-mode 1)
+  (save-place-mode 1)
+  (setq ring-bell-function 'ignore)
+#+end_src
+
+*** 防止生成多余文件
+
+#+begin_src emacs-lisp
+(setq backup-directory-alist
+      `(("." . ,(expand-file-name "backups/" user-emacs-directory))))
+
+(setq auto-save-file-name-transforms
+      `((".*" ,(expand-file-name "auto-save/" user-emacs-directory) t)))
+
+(setq create-lockfiles nil)
+#+end_src
+
+*** 滚动时上下行保留行数
+
+#+begin_src emacs-lisp
+  (setq scroll-margin 5)
+  (setq scroll-conservatively 101)
+#+end_src
+
+*** elisp 括号补全
+
+#+begin_src emacs-lisp
+  (add-hook 'emacs-lisp-mode-hook
+  	  #'electric-pair-local-mode)
+#+end_src
+
+* general
+
+** 安装 general
+
+#+begin_src emacs-lisp
+  (use-package general
+    :ensure t)
+
+  (general-create-definer my/leader
+  :prefix "C-c")
+#+end_src
+
+** buffer
+:PROPERTIES:
+:ID:       c7ebc80e-531f-442f-8d23-51d29180853d
+:END:
+
+#+begin_src emacs-lisp
+  (my/leader
+    "bb" #'switch-to-buffer
+    "bp" #'previous-buffer
+    "bn" #'next-buffer
+
+    "bd" #'kill-current-buffer
+    "bD" #'kill-buffer-and-window
+
+    "bw" #'save-buffer
+    "bR" #'rename-buffer)
+  #+end_src
+
+** file
+
+#+begin_src emacs-lisp
+  (my/leader
+    "ff" #'find-file
+    "fc" #'my/open-config
+    "fC" #'my/reload-emacs-config
+    "fd" #'dired
+    "fw" #'save-buffer
+    "fW" #'save-some-buffers)
+
+  (defconst my/emacs-config-org
+    (expand-file-name "config.org" user-emacs-directory)
+    )
+
+  (defconst my/emacs-config-el
+    (expand-file-name "config.el"
+                      user-emacs-directory))
+
+  (defun my/open-config ()
+    (interactive)
+    (find-file my/emacs-config-org))
+
+  (defun my/reload-emacs-config ()
+    (interactive)
+    (when-let ((buffer (get-file-buffer my/emacs-config-org)))
+      (with-current-buffer buffer
+        (save-buffer)))
+    (org-babel-tangle-file my/emacs-config-org)
+    (load-file my/emacs-config-el)
+    (message "Emacs config reloaded!"))
+#+end_src
+
+** 显示
+
+#+begin_src emacs-lisp
+  (my/leader
+    "uo" #'my/toggle-alpha-background
+    "ul" #'my/toggle-display-line-numbers
+    "uv" #'my/toggle-visual-fill-column)
+
+  (defconst my/default-alpha-background 80)
+
+  (defun my/toggle-alpha-background ()
+    "Toggle frame background opacity."
+    (interactive)
+    (set-frame-parameter
+     nil
+     'alpha-background
+     (if (= (or (frame-parameter nil 'alpha-background) 100) 100)
+         my/default-alpha-background
+       100))
+    (redraw-frame (selected-frame)))
+
+  (defun my/toggle-display-line-numbers ()
+    "Toggle display of line numbers."
+    (interactive)
+    (if display-line-numbers-mode
+        (display-line-numbers-mode -1)
+      (display-line-numbers-mode 1)))
+
+  (defun my/toggle-visual-fill-column ()
+    "Toggle visual fill column mode."
+    (interactive)
+    (if (bound-and-true-p visual-fill-column-mode)
+        (visual-fill-column-mode -1)
+      (visual-fill-column-mode 1)))
+#+end_src
+
+** magit
+
+#+begin_src emacs-lisp
+  (my/leader
+    "g" #'magit-status)
+#+end_src
+
+* git 集成
+
+** Magit
+
+Emacs 使用 Magit 管理 Git。
+
+安装：
+
+#+begin_src emacs-lisp
+  (use-package magit
+    :ensure t)
+#+end_src
+
+调用：`M-x magit-status`
+
+* Org
+
+Org 是 Emacs 中最好用的笔记插件
+
+** 基础配置
+
+*** 默认笔记路径
+
+#+begin_src emacs-lisp
+  (setq org-default-notes-file "~/org/inbox.org")
+#+end_src
+
+*** 使用链接 ID
+
+#+begin_src emacs-lisp
+  (setq org-id-link-to-org-use-id t)
+#+end_src
+
+*** 长行自动换行显示
+
+#+begin_src emacs-lisp
+  (add-hook 'org-mode-hook #'visual-line-mode)
+#+end_src
+
+*** 回车打开链接
+
+#+begin_src emacs-lisp
+  (setq org-return-follows-link t)
+  (setq org-link-frame-setup '((file . find-file)))
+#+end_src
+
+** 配置基础的快捷键
+
+#+begin_src emacs-lisp
+  (global-set-key (kbd "C-c l") #'org-store-link)
+  (global-set-key (kbd "C-c a") #'org-agenda)
+  (global-set-key (kbd "C-c c") #'org-capture)
+#+end_src
+
+** 基础美化
+
+#+begin_src emacs-lisp
+  (setq org-startup-indented t) ; 缩进
+  (setq org-startup-folded 'content) ; 折叠
+  (setq org-hide-leading-stars t) ; 隐藏多余标题星号
+#+end_src
+
+** 居中显示
+
+#+begin_src emacs-lisp
+  (use-package visual-fill-column
+    :ensure t
+    :custom
+    (visual-fill-column-width 80)
+    (visual-fill-column-center-text t))
+
+  (add-hook 'org-mode-hook #'visual-fill-column-mode)
+#+end_src
+
+** org babel
+
+*** 执行代码的时候不用询问
+
+#+begin_src emacs-lisp
+  (setq org-confirm-babel-evaluate nil)
+#+end_src
+
+*** COMMENT 这里同时设置不要显示输出结果
+
+#+begin_src emacs-lisp :tangle no
+  (setq org-babel-default-header-args '((:results . "silent")))
+#+end_src
+
+** org latex
+#+begin_src emacs-lisp
+  (setq org-preview-latex-default-process 'dvisvgm)
+#+end_src
+
+** 表格中英文对齐
+
+#+begin_src emacs-lisp
+  (use-package valign
+    :ensure t)
+
+  (add-hook 'org-mode-hook #'valign-mode)
+
+  ;; Fix valign + org-indent after folding/unfolding Org headings.
+  (with-eval-after-load 'valign
+    (defun my-valign-org-cycle-refresh (&rest _)
+      (when (and (derived-mode-p 'org-mode)
+                 (bound-and-true-p valign-mode))
+        ;; Wait until org-cycle/org-indent has finished updating
+        ;; the visibility and indentation, then refontify.
+        (run-at-time
+         0 nil
+         (lambda (buffer)
+           (when (buffer-live-p buffer)
+             (with-current-buffer buffer
+               (font-lock-flush))))
+         (current-buffer))))
+
+    (add-hook 'org-cycle-hook
+              #'my-valign-org-cycle-refresh
+              100))
+#+end_src
+
+** org toc
+
+#+begin_src emacs-lisp
+  (use-package toc-org
+    :ensure t
+    :hook (org-mode . toc-org-mode))
+#+end_src
+
+* 插件
+
+** rime 输入法
+
+#+begin_src emacs-lisp
+
+  ;;; input method
+  (use-package rime
+    :ensure t
+    :custom
+    (default-input-method "rime")
+    :config
+    (setq rime-user-data-dir
+          (expand-file-name "rime/" user-emacs-directory))
+    (setq rime-show-candidate 'posframe))
+#+end_src
+
+** fcitx
+
+#+begin_src emacs-lisp
+  (use-package fcitx
+    :ensure t
+    :config
+    (setq fcitx-use-dbus 'fcitx5
+          fcitx-remote-command "fcitx5-remote")
+    (fcitx-aggressive-setup))
+#+end_src
+
+** which key
+
+#+begin_src emacs-lisp
+  (use-package which-key
+    :ensure t
+    :init
+    (which-key-mode 1)
+    :config
+    (setq which-key-side-window-location 'bottom
+  	which-key-sort-order #'which-key-key-order-alpha
+  	which-key-sort-uppercase-first nil
+  	which-key-add-column-padding 1
+  	which-key-max-display-columns nil
+  	which-key-min-display-lines 6
+  	which-key-side-window-slot -10
+  	which-key-side-window-max-height 0.25
+  	which-key-idle-delay 0.8
+  	which-key-max-description-length 25
+  	which-key-allow-imprecise-window-fit t
+  	which-key-separator " -> "))
+#+end_src
+
+** 补全
+
+#+begin_src emacs-lisp
+  (use-package vertico
+    :ensure t
+    :init (vertico-mode))
+
+  (use-package orderless
+    :ensure t
+    :custom
+    (completion-styles '(orderless basic))
+    (completion-category-overrides '((file (styles partial-completion))))
+    (completion-pcm-leading-wildcard t))
+#+end_src
+
+** vterm
+
+#+begin_src emacs-lisp
+  (use-package vterm
+    :ensure t)
+#+end_src
+
+* 自定义功能

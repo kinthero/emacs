@@ -193,8 +193,8 @@
     "fW" #'save-some-buffers)
 
   (defconst my/emacs-config-org
-    (expand-file-name "config.org" user-emacs-directory)
-    )
+    (expand-file-name "config.org"
+  		    user-emacs-directory))
 
   (defconst my/emacs-config-el
     (expand-file-name "config.el"

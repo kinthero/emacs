@@ -236,7 +236,7 @@
   (my/leader
     "uo" #'my/toggle-alpha-background
     "ul" #'my/toggle-display-line-numbers
-    "uv" #'my/toggle-visual-fill-column)
+    "uc" #'my/toggle-visual-fill-column)
 
   (defconst my/default-alpha-background 80)
 
@@ -254,9 +254,7 @@
   (defun my/toggle-display-line-numbers ()
     "Toggle display of line numbers."
     (interactive)
-    (if display-line-numbers-mode
-        (display-line-numbers-mode -1)
-      (display-line-numbers-mode 1)))
+    (display-line-numbers-mode 'toggle))
 
   (defun my/toggle-visual-fill-column ()
     "Toggle visual fill column mode."

@@ -208,6 +208,28 @@
     (message "Emacs config reloaded!"))
 #+end_src
 
+** window
+
+#+begin_src emacs-lisp
+  (my/leader
+    ;; Window movement
+    "wh" #'windmove-left
+    "wj" #'windmove-down
+    "wk" #'windmove-up
+    "wl" #'windmove-right
+    "ww" #'other-window
+
+    ;; Window split
+    "ws" #'split-window-below
+    "wv" #'split-window-right
+
+    ;; Window management
+    "wd" #'delete-window
+    "wo" #'delete-other-windows
+    "wr" #'window-swap-states
+    "w=" #'balance-windows)
+#+end_src
+
 ** project
 
 #+begin_src emacs-lisp
@@ -418,6 +440,8 @@ Org 是 Emacs 中最好用的笔记插件
 #+end_src
 
 ** fcitx
+
+必须有一个英文输入法，并且在前面
 
 #+begin_src emacs-lisp
   (use-package fcitx

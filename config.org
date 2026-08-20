@@ -82,17 +82,31 @@
 *** modeline
 
 **** face attribute
+:PROPERTIES:
+:ID:       241de805-00d1-4e1f-8437-6ac16391957f
+:END:
 
 #+begin_src emacs-lisp
-  (set-face-attribute 'mode-line nil
-    		    :inherit 'default
-                      :overline "#7f67bd")
   (set-face-attribute 'mode-line-active nil
-    		    :inherit 'default
+                      :inherit 'default
+                      :background 'unspecified
+                      :foreground 'unspecified
+                      :box nil
                       :overline "orange")
+
   (set-face-attribute 'mode-line-inactive nil
-    		    :inherit 'default
-                      :overline "#eef4f9")  
+                      :inherit 'default
+                      :background 'unspecified
+                      :foreground 'unspecified
+                      :box nil
+                      :overline "#7f67bd")
+
+  (set-face-attribute 'mode-line nil
+                      :inherit 'default
+                      :background 'unspecified
+                      :foreground 'unspecified
+                      :box nil
+  		    :overline "#eef4f9")
 #+end_src
 
 **** display time
@@ -367,6 +381,58 @@ Org 是 Emacs 中最好用的笔记插件
   (add-hook 'org-mode-hook #'visual-fill-column-mode)
 #+end_src
 
+** org capture
+
+#+begin_src emacs-lisp
+  ;; Capture templates
+  (setq org-capture-templates
+        `(
+          ;; Inbox
+          ("i" "Inbox"
+           entry
+           (file+headline
+            ,(expand-file-name "inbox.org" org-directory)
+            "Inbox")
+           "* %?\n  %U\n"
+           :empty-lines 1)
+
+          ;; Todo
+          ("t" "Todo"
+           entry
+           (file+headline
+            ,(expand-file-name "todo.org" org-directory)
+            "Tasks")
+           "* TODO %?\n  %U\n"
+           :empty-lines 1)
+
+          ;; Note
+          ("n" "Note"
+           entry
+           (file+headline
+            ,(expand-file-name "inbox.org" org-directory)
+            "Inbox")
+           "* %?\n  %U\n"
+           :empty-lines 1)
+
+          ;; Journal
+          ("j" "Journal"
+           entry
+           (file+datetree
+            ,(expand-file-name "journal.org" org-directory))
+           "* %U %?\n"
+           :empty-lines 1)
+          ))
+
+  ;; Refile
+  (setq org-refile-targets
+        `((,(expand-file-name "inbox.org" org-directory) :maxlevel . 3)
+          (,(expand-file-name "todo.org" org-directory) :maxlevel . 3)
+          (,(expand-file-name "journal.org" org-directory) :maxlevel . 3)))
+
+  (setq org-refile-use-outline-path 'file)
+  (setq org-outline-path-complete-in-steps nil)
+#+end_src
+
 ** org babel
 
 *** 执行代码的时候不用询问
@@ -443,7 +509,7 @@ Org 是 Emacs 中最好用的笔记插件
 
 必须有一个英文输入法，并且在前面
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package fcitx
     :ensure t
     :config

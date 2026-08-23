@@ -4,8 +4,8 @@
 (setq default-frame-alist
       '((left . 0.5)
 	(top . 0.5)
-	(width . 0.6)
-	(height . 0.6)
+	(width . 0.8)
+	(height . 0.8)
 	(internal-border-width . 8)
 	(menu-bar-lines . 0)
 	(tool-bar-lines . 0)

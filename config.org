@@ -166,9 +166,8 @@
 #+begin_src emacs-lisp
   (use-package general
     :ensure t)
-
   (general-create-definer my/leader
-  :prefix "C-c")
+    :prefix "<escape>")
 #+end_src
 
 ** buffer

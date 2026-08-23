@@ -137,6 +137,7 @@
   (delete-selection-mode 1)
   (save-place-mode 1)
   (setq ring-bell-function 'ignore)
+  (setq-default indent-tabs-mode nil)
 #+end_src
 
 *** 防止生成多余文件

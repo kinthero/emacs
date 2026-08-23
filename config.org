@@ -79,14 +79,20 @@
   (setq frame-title-format nil)
 #+end_src
 
-*** modeline
+*** tab bar
+
+#+begin_src emacs-lisp
+  (tab-bar-mode 1)
+#+end_src
+
+*** mode line
 
 **** face attribute
 :PROPERTIES:
 :ID:       241de805-00d1-4e1f-8437-6ac16391957f
 :END:
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (set-face-attribute 'mode-line-active nil
                       :inherit 'default
                       :background 'unspecified
@@ -167,7 +173,7 @@
   (use-package general
     :ensure t)
   (general-create-definer my/leader
-    :prefix "<escape>")
+    :prefix "C-c")
 #+end_src
 
 ** buffer
@@ -187,6 +193,26 @@
     "bw" #'save-buffer
     "bR" #'rename-buffer)
   #+end_src
+
+** tab
+
+#+begin_src emacs-lisp
+  (my/leader
+    "t"  nil
+    "tn" #'tab-bar-new-tab
+    "tc" #'tab-bar-close-tab
+    "tt" #'tab-bar-switch-to-tab
+    "to" #'tab-bar-close-other-tabs
+    "tl" #'tab-bar-switch-to-next-tab
+    "th" #'tab-bar-switch-to-prev-tab
+    "L" #'tab-bar-switch-to-next-tab
+    "H" #'tab-bar-switch-to-prev-tab  
+    "tr" #'tab-bar-rename-tab)
+
+  (general-define-key
+   "C-M-h" #'tab-bar-switch-to-prev-tab
+   "C-M-l" #'tab-bar-switch-to-next-tab)
+#+End_src
 
 ** file
 
@@ -269,34 +295,99 @@
 
 #+begin_src emacs-lisp
   (my/leader
-    "uo" #'my/toggle-alpha-background
+    "uo" #'my/toggle-alpha
     "ul" #'my/toggle-display-line-numbers
-    "uc" #'my/toggle-visual-fill-column)
+    "uc" #'my/toggle-visual-fill-column
+    "um" #'my/toggle-mode-line
+    "uf" #'my/toggle-frame-size    
+    "u RET" #'my/toggle-frame-undecorated)
+#+end_src
 
-  (defconst my/default-alpha-background 80)
+*** 显示行号
 
-  (defun my/toggle-alpha-background ()
-    "Toggle frame background opacity."
-    (interactive)
-    (set-frame-parameter
-     nil
-     'alpha-background
-     (if (= (or (frame-parameter nil 'alpha-background) 100) 100)
-         my/default-alpha-background
-       100))
-    (redraw-frame (selected-frame)))
-
+#+begin_src emacs-lisp
   (defun my/toggle-display-line-numbers ()
     "Toggle display of line numbers."
     (interactive)
     (display-line-numbers-mode 'toggle))
+#+end_src
 
+*** 显示居中
+
+#+begin_src emacs-lisp
   (defun my/toggle-visual-fill-column ()
     "Toggle visual fill column mode."
     (interactive)
     (if (bound-and-true-p visual-fill-column-mode)
         (visual-fill-column-mode -1)
       (visual-fill-column-mode 1)))
+#+end_src
+
+*** 切换透明/不透明
+
+#+begin_src emacs-lisp
+  (defconst my/default-alpha 80)
+  (defun my/toggle-alpha ()
+    "Toggle frame opacity."
+    (interactive)
+    (let ((alpha (frame-parameter nil 'alpha)))
+      (set-frame-parameter
+       nil
+       'alpha
+       (if (or (null alpha)
+               (= (if (consp alpha)
+                      (car alpha)
+                    alpha)
+                  100))
+           (cons my/default-alpha 100)
+         '(100 . 100)))))
+#+end_src
+
+*** 显示/隐藏 modeline
+
+#+begin_src emacs-lisp
+  ;; toggle mode line
+  (defun my/toggle-mode-line ()
+    "Toggle visibility of the mode line in the current buffer."
+    (interactive)
+    (if mode-line-format
+        (setq mode-line-format nil)
+      (setq mode-line-format
+            (default-value 'mode-line-format)))
+    (redraw-display))
+#+end_src
+
+*** 显示/隐藏标题栏
+
+#+begin_src emacs-lisp
+  (defun my/toggle-frame-undecorated ()
+    "Toggle frame decoration."
+    (interactive)
+    (modify-frame-parameters
+     nil
+     `((undecorated
+        . ,(not (frame-parameter nil 'undecorated)))))
+    (select-frame-set-input-focus (selected-frame)))
+#+end_src
+
+*** 切换frame大小
+
+#+begin_src emacs-lisp
+  (defvar my/frame-scale 0.6)
+
+  (defun my/toggle-frame-size ()
+    "Toggle frame size between 60% and 95%."
+    (interactive)
+    (setq my/frame-scale
+          (if (= my/frame-scale 0.6)
+              0.99
+            0.6))
+    (modify-frame-parameters
+     nil
+     `((width . ,my/frame-scale)
+       (height . ,my/frame-scale)
+       (top . 0.5)
+       (left . 0.5))))
 #+end_src
 
 ** magit
@@ -508,13 +599,12 @@ Org 是 Emacs 中最好用的笔记插件
 
 必须有一个英文输入法，并且在前面
 
-#+begin_src emacs-lisp
+#+begin_src emacs-lisp :tangle no
   (use-package fcitx
     :ensure t
     :config
     (setq fcitx-use-dbus nil
           fcitx-remote-command "fcitx5-remote")
-    (fcitx-prefix-keys-add "<escape>")
     (fcitx-aggressive-setup))
 #+end_src
 

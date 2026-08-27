@@ -65,4 +65,6 @@
                     :box nil)
 
 (setq inhibit-startup-screen t
+      inhibit-splash-screen t
+      initial-buffer-choice nil
       initial-scratch-message nil)

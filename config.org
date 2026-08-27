@@ -137,7 +137,14 @@
   (delete-selection-mode 1)
   (save-place-mode 1)
   (setq ring-bell-function 'ignore)
-  (setq-default indent-tabs-mode nil)
+  (setq-default
+   indent-tabs-mode nil
+   tab-width 4)
+  (setq tab-always-indent 'complete)
+  (setq kill-do-not-save-duplicates t)
+  (setq save-interprogram-paste-before-kill t)
+  (setq split-width-threshold 170
+      split-height-threshold nil)
 #+end_src
 
 *** 防止生成多余文件
@@ -418,6 +425,12 @@ Emacs 使用 Magit 管理 Git。
 Org 是 Emacs 中最好用的笔记插件
 
 ** 基础配置
+
+*** 启动
+
+#+begin_src emacs-lisp
+  (setq initial-buffer-choice "~/org/todo.org")
+#+end_src
 
 *** 默认笔记路径
 

@@ -44,6 +44,94 @@
   				       user-emacs-directory))
 #+end_src
 
+* UI
+
+#+begin_src emacs-lisp
+  (setq frame-title-format nil)
+#+end_src
+
+** theme
+
+#+begin_src emacs-lisp
+  (use-package modus-themes
+  :ensure t
+  :demand t
+  :config
+  (modus-themes-load-theme 'modus-operandi-tinted))
+#+end_src
+
+** tab bar
+
+#+begin_src emacs-lisp
+  (setq tab-bar-show 1)
+  (setq tab-bar-close-button-show nil)
+  (setq tab-bar-tab-hints t)
+  (setq tab-bar-new-tab-choice "*scratch*")
+  (setq tab-bar-format '(tab-bar-format-tabs tab-bar-separator))
+
+
+  (set-face-attribute 'tab-bar nil
+                      :inherit 'default
+                      :background 'unspecified
+                      :box nil)
+
+  (set-face-attribute 'tab-bar-tab nil
+                      :inherit 'default
+                      :background 'unspecified
+                      :box nil)
+
+  (set-face-attribute 'tab-bar-tab-inactive nil
+                      :inherit 'default
+                      :background 'unspecified
+                      :foreground "gray50"
+                      :box nil)
+
+  (tab-bar-mode 1)
+#+end_src
+
+** mode line
+
+*** face attribute
+:PROPERTIES:
+:ID:       241de805-00d1-4e1f-8437-6ac16391957f
+:END:
+
+#+begin_src emacs-lisp
+  (set-face-attribute 'mode-line nil
+                      :inherit 'default
+                      :background 'unspecified
+                      :box nil
+                      :overline "#eef4f9")
+
+  (set-face-attribute 'mode-line-active nil
+                      :inherit 'default
+                      :background 'unspecified
+                      :overline "orange"
+                      :box nil)
+
+  (set-face-attribute 'mode-line-inactive nil
+                      :inherit 'default
+                      :background 'unspecified
+                      :overline "#7f67bd"
+                      :box nil)
+#+end_src
+
+*** display time
+
+#+begin_src emacs-lisp
+  (setq display-time-24hr-format t)
+  (setq display-time-load-average-threshold nil)
+  (display-time-mode 1)
+  (setq-default mode-line-format
+    	      '(" "
+    		mode-line-buffer-identification
+    		"   "
+    		mode-line-position
+    		mode-line-modes
+    		mode-line-format-right-align
+    		display-time-string))
+#+end_src
+
 * 基础配置
 
 ** custom
@@ -71,64 +159,6 @@
 
 #+begin_src emacs-lisp
   (set-fontset-font t 'han (font-spec :family "LXGW WenKai Mono GB"))
-#+end_src
-
-** UI
-
-#+begin_src emacs-lisp
-  (setq frame-title-format nil)
-#+end_src
-
-*** tab bar
-
-#+begin_src emacs-lisp
-  (tab-bar-mode 1)
-#+end_src
-
-*** mode line
-
-**** face attribute
-:PROPERTIES:
-:ID:       241de805-00d1-4e1f-8437-6ac16391957f
-:END:
-
-#+begin_src emacs-lisp :tangle no
-  (set-face-attribute 'mode-line-active nil
-                      :inherit 'default
-                      :background 'unspecified
-                      :foreground 'unspecified
-                      :box nil
-                      :overline "orange")
-
-  (set-face-attribute 'mode-line-inactive nil
-                      :inherit 'default
-                      :background 'unspecified
-                      :foreground 'unspecified
-                      :box nil
-                      :overline "#7f67bd")
-
-  (set-face-attribute 'mode-line nil
-                      :inherit 'default
-                      :background 'unspecified
-                      :foreground 'unspecified
-                      :box nil
-  		    :overline "#eef4f9")
-#+end_src
-
-**** display time
-
-#+begin_src emacs-lisp
-  (setq display-time-24hr-format t)
-  (setq display-time-load-average-threshold nil)
-  (display-time-mode 1)
-  (setq-default mode-line-format
-    	      '(" "
-    		mode-line-buffer-identification
-    		"   "
-    		mode-line-position
-    		mode-line-modes
-    		mode-line-format-right-align
-    		display-time-string))
 #+end_src
 
 ** 编辑增强
@@ -482,7 +512,7 @@ Org 是 Emacs 中最好用的笔记插件
     (visual-fill-column-width 80)
     (visual-fill-column-center-text t))
 
-  (add-hook 'org-mode-hook #'visual-fill-column-mode)
+  ;; (add-hook 'org-mode-hook #'visual-fill-column-mode)
 #+end_src
 
 ** org capture

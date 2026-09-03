@@ -101,18 +101,18 @@
                       :inherit 'default
                       :background 'unspecified
                       :box nil
-                      :overline "#eef4f9")
+                      :underline "#eef4f9")
 
   (set-face-attribute 'mode-line-active nil
                       :inherit 'default
                       :background 'unspecified
-                      :overline "orange"
+                      :underline "orange"
                       :box nil)
 
   (set-face-attribute 'mode-line-inactive nil
                       :inherit 'default
                       :background 'unspecified
-                      :overline "#7f67bd"
+                      :underline "#7f67bd"
                       :box nil)
 #+end_src
 
@@ -122,14 +122,31 @@
   (setq display-time-24hr-format t)
   (setq display-time-load-average-threshold nil)
   (display-time-mode 1)
-  (setq-default mode-line-format
-    	      '(" "
-    		mode-line-buffer-identification
-    		"   "
-    		mode-line-position
-    		mode-line-modes
-    		mode-line-format-right-align
-    		display-time-string))
+
+  ;; (setq-default mode-line-format
+  ;;               '("%e"
+  ;;                 " "
+  ;;                 mode-line-modified
+  ;;                 " "
+  ;;                 mode-line-buffer-identification
+  ;;                 mode-line-format-right-align
+  ;;                 ;; mode-line-modes
+  ;;                 " "
+  ;;                 "%Z"
+  ;;                 " "
+  ;;                 "%l"
+  ;;                 " ◷ "
+  ;;                 mode-line-misc-info
+  ;;                 mode-line-end-spaces))
+#+end_src
+
+*** mood line
+
+#+begin_src emacs-lisp
+  (use-package mood-line
+    :ensure t
+    :config
+    (mood-line-mode))
 #+end_src
 
 * 基础配置
@@ -516,6 +533,9 @@ Org 是 Emacs 中最好用的笔记插件
 #+end_src
 
 ** org capture
+:PROPERTIES:
+:ID:       0fd05794-009a-4484-851c-3556817c68eb
+:END:
 
 #+begin_src emacs-lisp
   ;; Capture templates
@@ -527,8 +547,8 @@ Org 是 Emacs 中最好用的笔记插件
            (file+headline
             ,(expand-file-name "inbox.org" org-directory)
             "Inbox")
-           "* %?\n  %U\n"
-           :empty-lines 1)
+           "* %?\n%U\n"
+           :empty-lines 0)
 
           ;; Todo
           ("t" "Todo"
@@ -536,8 +556,8 @@ Org 是 Emacs 中最好用的笔记插件
            (file+headline
             ,(expand-file-name "todo.org" org-directory)
             "Tasks")
-           "* TODO %?\n  %U\n"
-           :empty-lines 1)
+           "* TODO %?\n%U\n"
+           :empty-lines 0)
 
           ;; Note
           ("n" "Note"
@@ -545,8 +565,8 @@ Org 是 Emacs 中最好用的笔记插件
            (file+headline
             ,(expand-file-name "inbox.org" org-directory)
             "Inbox")
-           "* %?\n  %U\n"
-           :empty-lines 1)
+           "* %?\n%U\n"
+           :empty-lines 0)
 
           ;; Journal
           ("j" "Journal"
@@ -554,7 +574,7 @@ Org 是 Emacs 中最好用的笔记插件
            (file+datetree
             ,(expand-file-name "journal.org" org-directory))
            "* %U %?\n"
-           :empty-lines 1)
+           :empty-lines 0)
           ))
 
   ;; Refile
